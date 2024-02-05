@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
+import 'package:flutter/services.dart';
 import 'add3.dart';
 
 class AddFarmsPage2 extends StatefulWidget {
@@ -96,47 +97,62 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
         ), // Background color
       ),
       body: ListView(
-        children:[
+        children: [
           Container(
-          color: Color(0xffffffff), // Background color #D3FFA6
-          padding: EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Please enter farm details here',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                  color: Color(0xff218f00),
-                ),
-              ),
-              SizedBox(height: 20.0),
-              _buildHyperlinkedText('Farm location', 'Choose location on maps'),
-              _buildFormField(
-                  'Farm Land', 'Enter area in acres', _farmLandController),
-              _buildFormField('Area (Mangoes)',
-                  'Area spent on mango trees in acres', _mangoAreaController),
-              _buildFormField('Area (Other crops)',
-                  'Area spent on others in acres', _otherCropsAreaController),
-              SizedBox(height: 20.0),
-              SizedBox(height: 20.0),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    _saveFarmDetails(context);
-                  },
-                  child: Text('Continue', style: TextStyle(color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF006227),
+            color: Color(0xffffffff), // Background color #D3FFA6
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Please enter farm details here',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                    color: Color(0xff218f00),
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: 20.0),
+                _buildHyperlinkedText('Farm location', 'Choose location on maps'),
+                _buildTextFieldWithLabel(
+                  'Farm Land',
+                  'Enter area in acres',
+                  _farmLandController,
+                  isNumeric: true,
+                  isRequired: true,
+                ),
+                _buildTextFieldWithLabel(
+                  'Area (Mangoes)',
+                  'Area spent on mango trees in acres',
+                  _mangoAreaController,
+                  isNumeric: true,
+                  isRequired: true,
+                ),
+                _buildTextFieldWithLabel(
+                  'Area (Other crops)',
+                  'Area spent on others in acres',
+                  _otherCropsAreaController,
+                  isNumeric: true,
+                  isRequired: true,
+                ),
+                SizedBox(height: 20.0),
+                SizedBox(height: 20.0),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _saveFarmDetails(context);
+                    },
+                    child: Text('Continue', style: TextStyle(color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xFF006227),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
         ],
       ),
     );
@@ -177,26 +193,34 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
     );
   }
 
-  Widget _buildFormField(
-      String heading, String placeholder, TextEditingController controller) {
+  Widget _buildTextFieldWithLabel(
+      String label, String hintText, TextEditingController controller,
+      {bool isNumeric = false, bool isRequired = true}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20.0),
         Text(
-          heading,
+          label,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Color(0xff218f00),
           ),
         ),
-        SizedBox(height: 5.0),
+        SizedBox(height: 10),
         TextFormField(
           controller: controller,
+          keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+          inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
           decoration: InputDecoration(
-            hintText: placeholder,
+            hintText: hintText,
             border: OutlineInputBorder(),
+            errorText: isRequired && controller.text.isEmpty ? 'Please enter the details' : null,
           ),
+          onChanged: (value) {
+            if (isRequired) {
+              setState(() {}); // Trigger a rebuild to update the error text dynamically
+            }
+          },
         ),
       ],
     );

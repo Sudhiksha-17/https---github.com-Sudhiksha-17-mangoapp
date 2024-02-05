@@ -19,7 +19,7 @@ class LoginPage2 extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ResetPasswordPage(email: _emailController.text),
+          builder: (context) => ResetPasswordPage(),
         ),
       );
     } catch (e) {

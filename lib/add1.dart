@@ -7,6 +7,8 @@ import 'package:mangoapp/add2.dart';
 import 'package:mangoapp/displayfarms.dart';
 import 'package:uuid/uuid.dart';
 import 'add2.dart';
+import 'package:flutter/services.dart'; 
+
 
 class AddFarmsPage extends StatefulWidget {
   final String farmId;
@@ -38,6 +40,13 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
 
       DocumentReference<Map<String, dynamic>> documentReference =
           FirebaseFirestore.instance.collection(subfolder).doc('FarmDetails1');
+
+      if (_farmerNameController.text.isEmpty ||
+          _phoneNumberController.text.isEmpty ||
+          _addressLine1Controller.text.isEmpty) {
+        // Display an error message or prevent navigation if any required field is empty.
+        return;
+      }
 
       documentReference.set({
         'farmerName': _farmerNameController.text,
@@ -127,10 +136,19 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
                 ),
                 SizedBox(height: 10),
                 _buildTextFieldWithLabel(
-                    'Farmer Name', 'Enter Farmer Name', _farmerNameController),
+                  'Farmer Name',
+                  'Enter Farmer Name',
+                  _farmerNameController,
+                  isRequired: true,
+                ),
                 SizedBox(height: 10),
                 _buildTextFieldWithLabel(
-                    'Phone Number', 'Enter Phone Number', _phoneNumberController),
+                  'Phone Number',
+                  'Enter Phone Number',
+                  _phoneNumberController,
+                  isNumeric: true,
+                  isRequired: true,
+                ),
                 SizedBox(height: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,20 +161,18 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
                       ),
                     ),
                     SizedBox(height: 10),
-                    TextField(
-                      controller: _addressLine1Controller,
-                      decoration: InputDecoration(
-                        hintText: 'Address Line 1',
-                        border: OutlineInputBorder(),
-                      ),
+                    _buildTextFieldWithLabel(
+                      'Address Line 1',
+                      'Enter Address Line 1',
+                      _addressLine1Controller,
+                      isRequired: true,
                     ),
                     SizedBox(height: 10),
-                    TextField(
-                      controller: _addressLine2Controller,
-                      decoration: InputDecoration(
-                        hintText: 'Address Line 2(optional)',
-                        border: OutlineInputBorder(),
-                      ),
+                    _buildTextFieldWithLabel(
+                      'Address Line 2 (optional)',
+                      'Enter Address Line 2',
+                      _addressLine2Controller,
+                      isRequired: false,
                     ),
                   ],
                 ),
@@ -210,7 +226,7 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
   }
 
   Widget _buildTextFieldWithLabel(
-      String label, String hintText, TextEditingController controller) {
+      String label, String hintText, TextEditingController controller, {bool isNumeric = false, bool isRequired = true}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -224,10 +240,20 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
         SizedBox(height: 10),
         TextField(
           controller: controller,
+          keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+          inputFormatters: isNumeric
+              ? [FilteringTextInputFormatter.digitsOnly]
+              : null,
           decoration: InputDecoration(
             hintText: hintText,
             border: OutlineInputBorder(),
+            errorText: isRequired && controller.text.isEmpty ? 'Please enter the details' : null,
           ),
+          onChanged: (value) {
+            if (isRequired) {
+              setState(() {}); // Trigger a rebuild to update the error text dynamically
+            }
+          },
         ),
       ],
     );

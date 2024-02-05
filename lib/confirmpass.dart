@@ -1,42 +1,12 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
-
+/*
 class ResetPasswordPage extends StatelessWidget {
-  ResetPasswordPage({Key? key, required this.email}) : super(key: key);
-
-  final String email;
-  late final TextEditingController _newPasswordController =
-      TextEditingController();
-  late final TextEditingController _confirmPasswordController =
-      TextEditingController();
-
-  void _submitNewPassword(BuildContext context) {
-    try {
-      if (_newPasswordController.text.isNotEmpty &&
-          _confirmPasswordController.text.isNotEmpty) {
-        if (_newPasswordController.text == _confirmPasswordController.text) {
-          // Password reset successful, navigate to LoginPage
-          //test test
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
-          );
-        } else {
-          // Passwords don't match, show an error or display a snackbar
-          print('Passwords do not match');
-        }
-      }
-    } catch (e) {
-      print('Error resetting password: $e');
-      // Handle the error, show an error message or display a snackbar
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFF0EA73C), Color(0xFF12600B)],
             begin: Alignment.topCenter,
@@ -47,40 +17,39 @@ class ResetPasswordPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const SizedBox(height: 50.0),
-              const Icon(Icons.lock_open, size: 100.0, color: Colors.white),
-              const Padding(
-                padding: EdgeInsets.only(top: 20.0),
-                child: Text(
-                  'Reset Password',
-                  style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+              SizedBox(height: 50.0),
+              Text(
+                'A password reset link has been sent to the Email-id you have provided. Please click on the link to reset your password.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 20.0),
-              _buildTextFieldWithLabel(
-                'Enter New Password',
-                controller: _newPasswordController,
-                isPassword: true,
+              SizedBox(height: 20.0),
+              Text(
+                'After resetting, Click here to login with your new password.',
+                style: TextStyle(
+                  color: Color(0xFF006227),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              _buildTextFieldWithLabel(
-                'Confirm New Password',
-                controller: _confirmPasswordController,
-                isPassword: true,
-              ),
-              const SizedBox(height: 20.0),
+              SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () {
-                  _submitNewPassword(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xffffffff),
+                  backgroundColor: Colors.white,
                 ),
-                child: const Text('Submit',
-                    style: TextStyle(color: Color(0xFF006227))),
+                child: Text(
+                  'Back to Login',
+                  style: TextStyle(color: Color(0xFF006227)),
+                ),
               ),
             ],
           ),
@@ -88,40 +57,90 @@ class ResetPasswordPage extends StatelessWidget {
       ),
     );
   }
+}
+*/
 
-  Widget _buildTextFieldWithLabel(
-    String label, {
-    TextEditingController? controller,
-    bool isPassword = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w400,
-              fontSize: 18.0,
-            ),
+
+class ResetPasswordPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF0EA73C), Color(0xFF12600B)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: label,
-              hintStyle: const TextStyle(color: Colors.white70),
-              border: const OutlineInputBorder(),
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'A password reset link has been sent to the Email-id you have provided. Please click on the link to reset your password.',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
-            style: const TextStyle(color: Colors.white),
-            obscureText: isPassword,
+              SizedBox(height: 20.0),
+              Text(
+                'After resetting, Click here to login with your new password.',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20.0),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to the LoginPage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.white,
+                  onPrimary: Color(0xFF006227),
+                ),
+                child: Text('Login'),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
+/*
+class LoginPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Login Page'),
+      ),
+      body: Center(
+        child: Text('This is the Login Page'),
+      ),
+    );
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: ResetPasswordPage(),
+    );
+  }
+}
+*/

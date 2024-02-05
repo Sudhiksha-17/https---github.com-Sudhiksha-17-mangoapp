@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatter
 import 'package:mangoapp/add4.dart';
-import 'package:mangoapp/add5.dart';
 
 class MangoFarmDetailsPage extends StatefulWidget {
   final String farmId; // Add farmId as a parameter
@@ -14,12 +14,12 @@ class MangoFarmDetailsPage extends StatefulWidget {
 }
 
 class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
-  final TextEditingController _numberOfVarietyController =
+  late final TextEditingController _numberOfVarietyController =
       TextEditingController();
-  final TextEditingController _numberOfTreesController =
+  late final TextEditingController _numberOfTreesController =
       TextEditingController();
   String selectedOption = '';
-  final TextEditingController _yieldController = TextEditingController();
+  late final TextEditingController _yieldController = TextEditingController();
 
   Future<void> _saveMangoFarmDetails(BuildContext context) async {
     var user = FirebaseAuth.instance.currentUser;
@@ -61,62 +61,64 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
         ),
       ),
       body: ListView(
-        children:[
-
-      Container(
-        color: Color(0xffffffff),
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Text(
-                'Please enter mango farm details here',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                  color: Color(0xff218f00),
+        children: [
+          Container(
+            color: Color(0xffffffff),
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    'Please enter mango farm details here',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: Color(0xff218f00),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            SizedBox(height: 20),
-            _buildSubHeading('Mango Varieties'),
-            SizedBox(height: 10),
-            _buildTextField('Number of mango variety', TextInputType.number,
-                _numberOfVarietyController),
-            SizedBox(height: 20),
-            _buildSubHeading('Count of Mango Trees'),
-            SizedBox(height: 10),
-            _buildTextField('Number of mango tree', TextInputType.number,
-                _numberOfTreesController),
-            SizedBox(height: 20),
-            _buildSubHeading('Irrigation Method'),
-            SizedBox(height: 10),
-            _buildDropDown(
-              'Method of irrigation',
-              ['Drip irrigation', 'Sprinkler irrigation', 'Surface irrigation'],
-            ),
-            SizedBox(height: 20),
-            _buildSubHeading('Yield in Previous Year'),
-            SizedBox(height: 10),
-            _buildTextField('Yield of mangoes in the previous year',
-                TextInputType.number, _yieldController),
-            SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  _saveMangoFarmDetails(context);
-                },
-                child: Text('Continue', style: TextStyle(color: Colors.white)),
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF006227),
+                SizedBox(height: 20),
+                
+                _buildTextFieldWithLabel('Number of mango variety',
+                    'Enter number of mango variety', _numberOfVarietyController,
+                    isNumeric: true, isRequired: true),
+                SizedBox(height: 20),
+                
+                _buildTextFieldWithLabel('Number of mango tree',
+                    'Enter number of mango tree', _numberOfTreesController,
+                    isNumeric: true, isRequired: true),
+                SizedBox(height: 20),
+                _buildSubHeading('Irrigation Method'),
+                SizedBox(height: 10),
+                _buildDropDown(
+                  'Method of irrigation',
+                  ['Drip irrigation', 'Sprinkler irrigation', 'Surface irrigation'],
                 ),
-              ),
+                SizedBox(height: 20),
+                
+                _buildTextFieldWithLabel(
+                    'Yield of mangoes in the previous year',
+                    'Enter yield in the previous year',
+                    _yieldController,
+                    isNumeric: true,
+                    isRequired: true),
+                SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _saveMangoFarmDetails(context);
+                    },
+                    child: Text('Continue', style: TextStyle(color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xFF006227),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
         ],
       ),
     );
@@ -129,18 +131,6 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
         fontWeight: FontWeight.bold,
         color: Color(0xff218f00),
       ),
-    );
-  }
-
-  Widget _buildTextField(String placeholder, TextInputType inputType,
-      TextEditingController controller) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        hintText: placeholder,
-        border: OutlineInputBorder(),
-      ),
-      keyboardType: inputType,
     );
   }
 
@@ -169,6 +159,39 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
           },
         ),
       ),
+    );
+  }
+  Widget _buildTextFieldWithLabel(
+      String label, String hintText, TextEditingController controller, {bool isNumeric = false, bool isRequired = true}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xff218f00),
+          ),
+        ),
+        SizedBox(height: 10),
+        TextField(
+          controller: controller,
+          keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+          inputFormatters: isNumeric
+              ? [FilteringTextInputFormatter.digitsOnly]
+              : null,
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: OutlineInputBorder(),
+            errorText: isRequired && controller.text.isEmpty ? 'Please enter the details' : null,
+          ),
+          onChanged: (value) {
+            if (isRequired) {
+              setState(() {}); // Trigger a rebuild to update the error text dynamically
+            }
+          },
+        ),
+      ],
     );
   }
 }
