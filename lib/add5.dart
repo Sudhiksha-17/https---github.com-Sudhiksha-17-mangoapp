@@ -1,43 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mangoapp/add4.dart';
-import 'package:mangoapp/add5.dart';
+import 'package:mangoapp/add6.dart';
+import 'add4.dart';
 
-class MangoFarmDetailsPage extends StatefulWidget {
+class MangoFarmDetailsPage2 extends StatefulWidget {
   final String farmId; // Add farmId as a parameter
 
-  MangoFarmDetailsPage({required this.farmId, Key? key}) : super(key: key);
+  MangoFarmDetailsPage2({required this.farmId, Key? key}) : super(key: key);
 
   @override
-  _MangoFarmDetailsPageState createState() => _MangoFarmDetailsPageState();
+  _MangoFarmDetailsPage2State createState() => _MangoFarmDetailsPage2State();
 }
 
-class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
-  final TextEditingController _numberOfVarietyController =
-      TextEditingController();
-  final TextEditingController _numberOfTreesController =
-      TextEditingController();
-  String selectedOption = '';
-  final TextEditingController _yieldController = TextEditingController();
+class _MangoFarmDetailsPage2State extends State<MangoFarmDetailsPage2> {
+  final TextEditingController _areaController = TextEditingController();
+  final TextEditingController _treeCountController = TextEditingController();
+  final TextEditingController _ageOfTreesController = TextEditingController();
+  String _selectedMangoVariety = '';
+  bool _showNewVarietyTextField = false; // Added this variable
 
-  Future<void> _saveMangoFarmDetails(BuildContext context) async {
+  Future<void> _saveMangoVarietyDetails(BuildContext context) async {
+    // Get the current user
     var user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
+      // Save mango variety details to Firestore under FarmerDetails5 subsection
       String subfolder = 'users/${user.uid}/${widget.farmId}/';
 
       await FirebaseFirestore.instance
           .collection(subfolder)
-          .doc('FarmerDetails3')
+          .doc('FarmerDetails5')
           .set({
-        'userId': user.uid,
-        'numberOfVarieties': _numberOfVarietyController.text,
-        'numberOfTrees': _numberOfTreesController.text,
-        'irrigationMethod': selectedOption,
-        'yieldInPreviousYear': _yieldController.text,
+        'mangoVariety': _selectedMangoVariety,
+        'area': _areaController.text,
+        'treeCount': _treeCountController.text,
+        'ageOfTrees': _ageOfTreesController.text,
       });
 
+      // Navigate to the next page (OtherPlantsDetailsPage or any other page)
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -62,7 +63,7 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
       ),
       body: ListView(
         children:[
-
+      
       Container(
         color: Color(0xffffffff),
         padding: EdgeInsets.all(20.0),
@@ -81,34 +82,71 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
               ),
             ),
             SizedBox(height: 20),
-            _buildSubHeading('Mango Varieties'),
+            _buildSubHeading('Mango Variety'),
             SizedBox(height: 10),
-            _buildTextField('Number of mango variety', TextInputType.number,
-                _numberOfVarietyController),
+            _buildDropDown('Name of the mango variety', [
+              "ALPHONSO",
+              "ATHIMATHURAM",
+              "BANGANAPALLI",
+              "CHERUKURASAM",
+              "CHAUSA",
+              "DEUGAD ALPHONSO",
+              "DHASERI",
+              "HIMAM PASAND",
+              "JAHANGIR",
+              "JAWARI",
+              "KALAPADI",
+              "KESAR",
+              "KOPPUR BANGANAPALLI",
+              "KOPPUR KALAPADI",
+              "KOPPUR RUMAN",
+              "LANGRA",
+              "MALLIKA",
+              "MALGOVA",
+              "MALIHABADI DHASHERI",
+              "NEELAM",
+              "PANCHAVARNAM",
+              "PATTANI GOVA",
+              "PEDDHA RASAL",
+              "PETHER",
+              "RATHNAGIRI ALPHONSO",
+              "RUMANI",
+              "SENDHURA",
+              "SWARNAREKHA",
+              "TOTAPURI/ BANGAWRA",
+              "VADU MANGAI",
+              "Others", // Added "Others" option
+            ]),
+            if (_selectedMangoVariety == "Others") ...[
+              SizedBox(height: 10),
+              _buildTextField(
+                'Enter the name of the new mango variety',
+                TextInputType.text,
+                _ageOfTreesController,
+              ),
+            ],
             SizedBox(height: 20),
-            _buildSubHeading('Count of Mango Trees'),
+            _buildSubHeading('Area of this variety'),
             SizedBox(height: 10),
-            _buildTextField('Number of mango tree', TextInputType.number,
-                _numberOfTreesController),
+            _buildTextField('Area spent on this variety in acres',
+                TextInputType.number, _areaController),
             SizedBox(height: 20),
-            _buildSubHeading('Irrigation Method'),
+            _buildSubHeading('Count of trees in this variety'),
             SizedBox(height: 10),
-            _buildDropDown(
-              'Method of irrigation',
-              ['Drip irrigation', 'Sprinkler irrigation', 'Surface irrigation'],
-            ),
+            _buildTextField('Number of trees of this variety',
+                TextInputType.number, _treeCountController),
             SizedBox(height: 20),
-            _buildSubHeading('Yield in Previous Year'),
+            _buildSubHeading('Age of trees'),
             SizedBox(height: 10),
-            _buildTextField('Yield of mangoes in the previous year',
-                TextInputType.number, _yieldController),
+            _buildTextField('Period since the trees are planted(in yrs/months)',
+                TextInputType.text, _ageOfTreesController),
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  _saveMangoFarmDetails(context);
+                  _saveMangoVarietyDetails(context);
                 },
-                child: Text('Continue', style: TextStyle(color: Colors.white)),
+                child: Text('Save', style: TextStyle(color: Colors.white)),
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF006227),
                 ),
@@ -155,7 +193,8 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
         child: DropdownButton<String>(
           isExpanded: true,
           hint: Text(placeholder),
-          value: selectedOption.isNotEmpty ? selectedOption : null,
+          value:
+              _selectedMangoVariety.isNotEmpty ? _selectedMangoVariety : null,
           items: options.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -164,7 +203,7 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
           }).toList(),
           onChanged: (String? value) {
             setState(() {
-              selectedOption = value ?? '';
+              _selectedMangoVariety = value ?? '';
             });
           },
         ),

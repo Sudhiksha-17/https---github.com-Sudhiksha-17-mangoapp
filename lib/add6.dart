@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart'; 
 import 'add9.dart';
 
 class OtherPlantsDetailsPage extends StatefulWidget {
@@ -10,8 +9,7 @@ class OtherPlantsDetailsPage extends StatefulWidget {
   OtherPlantsDetailsPage({required this.farmId, Key? key}) : super(key: key);
 
   @override
-  _OtherPlantsDetailsPageState createState() =>
-      _OtherPlantsDetailsPageState();
+  _OtherPlantsDetailsPageState createState() => _OtherPlantsDetailsPageState();
 }
 
 class _OtherPlantsDetailsPageState extends State<OtherPlantsDetailsPage> {
@@ -80,31 +78,20 @@ class _OtherPlantsDetailsPageState extends State<OtherPlantsDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 20),
-              
-                _buildTextFieldWithLabel(
-                  'Name of the crop',
-                  'Enter crop name',
-                  _cropNameController,
-                  isRequired: true,
-                ),
+                _buildSubHeading('Crop Name'),
+                SizedBox(height: 10),
+                _buildTextField('Name of the crop', TextInputType.text,
+                    _cropNameController),
                 SizedBox(height: 20),
-               
-                _buildTextFieldWithLabel(
-                  'Area spent on this crop in acres',
-                  'Enter area in acres',
-                  _areaUtilizedController,
-                  isNumeric: true,
-                  isRequired: true,
-                ),
+                _buildSubHeading('Area Utilized'),
+                SizedBox(height: 10),
+                _buildTextField('Area spent on this crop in acres',
+                    TextInputType.number, _areaUtilizedController),
                 SizedBox(height: 20),
-               
-                _buildTextFieldWithLabel(
-                  'Number of plants of this crop',
-                  'Enter number of plants',
-                  _countOfPlantsController,
-                  isNumeric: true,
-                  isRequired: true,
-                ),
+                _buildSubHeading('Count of Plants'),
+                SizedBox(height: 10),
+                _buildTextField('Number of plants of this crop',
+                    TextInputType.number, _countOfPlantsController),
                 SizedBox(height: 20),
                 _buildSubHeading('Irrigation Method'),
                 SizedBox(height: 10),
@@ -173,37 +160,16 @@ class _OtherPlantsDetailsPageState extends State<OtherPlantsDetailsPage> {
     );
   }
 
-  Widget _buildTextFieldWithLabel(
-    String label, String hintText, TextEditingController controller,
-    {bool isNumeric = false, bool isRequired = true}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Color(0xff218f00),
-        ),
+  Widget _buildTextField(String placeholder, TextInputType inputType,
+      TextEditingController controller) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: placeholder,
+        border: OutlineInputBorder(),
       ),
-      SizedBox(height: 10),
-      TextField(
-        controller: controller,
-        keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-        inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : null,
-        decoration: InputDecoration(
-          hintText: hintText,
-          border: OutlineInputBorder(),
-          errorText: isRequired && controller.text.isEmpty ? 'Please enter the details' : null,
-        ),
-        onChanged: (value) {
-          if (isRequired) {
-            setState(() {}); // Trigger a rebuild to update the error text dynamically
-          }
-        },
-      ),
-    ],
-  );
+      keyboardType: inputType,
+    );
   }
 
   Widget _buildDropDown(String placeholder, List<String> options) {

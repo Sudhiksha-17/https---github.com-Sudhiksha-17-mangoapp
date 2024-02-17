@@ -7,8 +7,6 @@ import 'package:mangoapp/add2.dart';
 import 'package:mangoapp/displayfarms.dart';
 import 'package:uuid/uuid.dart';
 import 'add2.dart';
-import 'package:flutter/services.dart'; 
-
 
 class AddFarmsPage extends StatefulWidget {
   final String farmId;
@@ -41,13 +39,6 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
       DocumentReference<Map<String, dynamic>> documentReference =
           FirebaseFirestore.instance.collection(subfolder).doc('FarmDetails1');
 
-      if (_farmerNameController.text.isEmpty ||
-          _phoneNumberController.text.isEmpty ||
-          _addressLine1Controller.text.isEmpty) {
-        // Display an error message or prevent navigation if any required field is empty.
-        return;
-      }
-
       documentReference.set({
         'farmerName': _farmerNameController.text,
         'phoneNumber': _phoneNumberController.text,
@@ -57,9 +48,39 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
       });
 
       if (_selectedFiles != null && _selectedFiles!.isNotEmpty) {
-        List<String> fileUrls = await _uploadFilesToStorage(
-            _selectedFiles!, user.uid, widget.farmId);
-        await documentReference.update({'fileUrls': fileUrls});
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return _buildProgressDialog();
+          },
+          barrierDismissible: false,
+        );
+
+        try {
+          List<String> fileUrls = await _uploadFilesToStorage(
+            _selectedFiles!,
+            user.uid,
+            widget.farmId,
+            (double progress) {
+              // Update progress bar here if needed
+              print("Upload Progress: ${(progress * 100).toStringAsFixed(2)}%");
+            },
+          );
+
+          Navigator.of(context).pop(); // Close the progress dialog
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return _buildConfirmationDialog();
+            },
+          );
+
+          await documentReference.update({'fileUrls': fileUrls});
+        } catch (error) {
+          print("Error uploading files: $error");
+          // Handle error (display a message, log it, etc.)
+        }
       }
 
       Navigator.push(
@@ -72,9 +93,11 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
   }
 
   Future<List<String>> _uploadFilesToStorage(
-      List<FilePickerResult?> selectedFiles,
-      String userId,
-      String farmId) async {
+    List<FilePickerResult?> selectedFiles,
+    String userId,
+    String farmId,
+    Function(double) onProgress,
+  ) async {
     List<String> fileUrls = [];
     String subfolder = 'users/$userId/$farmId/';
 
@@ -90,7 +113,15 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
         final StorageRef = FirebaseStorage.instance.ref().child(
             '$farmerIdSubfolder${DateTime.now().millisecondsSinceEpoch}_$fileName');
 
-        await StorageRef.putData(file.bytes!);
+        final uploadTask = StorageRef.putData(file.bytes!);
+        uploadTask.snapshotEvents.listen(
+          (TaskSnapshot snapshot) {
+            double progress = snapshot.bytesTransferred / snapshot.totalBytes;
+            onProgress(progress);
+          },
+        );
+
+        await uploadTask; // Wait for the upload to complete
 
         final downloadURL = await StorageRef.getDownloadURL();
         fileUrls.add(downloadURL);
@@ -136,19 +167,10 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
                 ),
                 SizedBox(height: 10),
                 _buildTextFieldWithLabel(
-                  'Farmer Name',
-                  'Enter Farmer Name',
-                  _farmerNameController,
-                  isRequired: true,
-                ),
+                    'Farmer Name', 'Enter Farmer Name', _farmerNameController),
                 SizedBox(height: 10),
-                _buildTextFieldWithLabel(
-                  'Phone Number',
-                  'Enter Phone Number',
-                  _phoneNumberController,
-                  isNumeric: true,
-                  isRequired: true,
-                ),
+                _buildTextFieldWithLabel('Phone Number', 'Enter Phone Number',
+                    _phoneNumberController),
                 SizedBox(height: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,18 +183,20 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
                       ),
                     ),
                     SizedBox(height: 10),
-                    _buildTextFieldWithLabel(
-                      'Address Line 1',
-                      'Enter Address Line 1',
-                      _addressLine1Controller,
-                      isRequired: true,
+                    TextField(
+                      controller: _addressLine1Controller,
+                      decoration: InputDecoration(
+                        hintText: 'Address Line 1',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                     SizedBox(height: 10),
-                    _buildTextFieldWithLabel(
-                      'Address Line 2 (optional)',
-                      'Enter Address Line 2',
-                      _addressLine2Controller,
-                      isRequired: false,
+                    TextField(
+                      controller: _addressLine2Controller,
+                      decoration: InputDecoration(
+                        hintText: 'Address Line 2(optional)',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ],
                 ),
@@ -190,9 +214,29 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
                           allowedExtensions: ['pdf', 'jpg', 'png'],
                         );
                         if (result != null) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return _buildProgressDialog();
+                            },
+                            barrierDismissible: false,
+                          );
+
                           setState(() {
                             _selectedFiles = [result];
                           });
+
+                          // Upload the selected files immediately
+                          await _uploadFilesToStorage(
+                            _selectedFiles!,
+                            FirebaseAuth.instance.currentUser!.uid,
+                            widget.farmId,
+                            (double progress) {
+                              // Update progress bar here if needed
+                              print(
+                                  "Upload Progress: ${(progress * 100).toStringAsFixed(2)}%");
+                            },
+                          );
                         }
                       },
                       child: Text(
@@ -211,7 +255,8 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
                     onPressed: () {
                       _saveFarmerDetails(context);
                     },
-                    child: Text('Continue', style: TextStyle(color: Colors.white)),
+                    child:
+                        Text('Continue', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(
                       primary: Color(0xFF006227),
                     ),
@@ -226,7 +271,7 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
   }
 
   Widget _buildTextFieldWithLabel(
-      String label, String hintText, TextEditingController controller, {bool isNumeric = false, bool isRequired = true}) {
+      String label, String hintText, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -240,20 +285,38 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
         SizedBox(height: 10),
         TextField(
           controller: controller,
-          keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-          inputFormatters: isNumeric
-              ? [FilteringTextInputFormatter.digitsOnly]
-              : null,
           decoration: InputDecoration(
             hintText: hintText,
             border: OutlineInputBorder(),
-            errorText: isRequired && controller.text.isEmpty ? 'Please enter the details' : null,
           ),
-          onChanged: (value) {
-            if (isRequired) {
-              setState(() {}); // Trigger a rebuild to update the error text dynamically
-            }
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProgressDialog() {
+    return AlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: 16),
+          Text("Uploading..."),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConfirmationDialog() {
+    return AlertDialog(
+      title: Text("Upload Complete"),
+      content: Text("The image has been uploaded successfully."),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
           },
+          child: Text("OK"),
         ),
       ],
     );

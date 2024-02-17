@@ -1,47 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mangoapp/add4.dart';
-import 'package:mangoapp/add5.dart';
+import 'add6.dart';
 
-class MangoFarmDetailsPage extends StatefulWidget {
+class OtherPlantsDetailsPage2 extends StatefulWidget {
   final String farmId; // Add farmId as a parameter
 
-  MangoFarmDetailsPage({required this.farmId, Key? key}) : super(key: key);
+  OtherPlantsDetailsPage2({required this.farmId, Key? key}) : super(key: key);
 
   @override
-  _MangoFarmDetailsPageState createState() => _MangoFarmDetailsPageState();
+  _OtherPlantsDetailsPage2State createState() =>
+      _OtherPlantsDetailsPage2State();
 }
 
-class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
-  final TextEditingController _numberOfVarietyController =
-      TextEditingController();
-  final TextEditingController _numberOfTreesController =
-      TextEditingController();
-  String selectedOption = '';
-  final TextEditingController _yieldController = TextEditingController();
+class _OtherPlantsDetailsPage2State extends State<OtherPlantsDetailsPage2> {
+  final TextEditingController _cropNameController = TextEditingController();
+  final TextEditingController _areaController = TextEditingController();
+  final TextEditingController _plantCountController = TextEditingController();
+  String _selectedIrrigationMethod = '';
 
-  Future<void> _saveMangoFarmDetails(BuildContext context) async {
+  Future<void> _saveOtherPlantsDetails(BuildContext context) async {
+    // Get the current user
     var user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
+      // Save other plants details to Firestore under FarmerDetails7 subsection
       String subfolder = 'users/${user.uid}/${widget.farmId}/';
 
       await FirebaseFirestore.instance
           .collection(subfolder)
-          .doc('FarmerDetails3')
+          .doc('OtherPlantDetails2')
           .set({
-        'userId': user.uid,
-        'numberOfVarieties': _numberOfVarietyController.text,
-        'numberOfTrees': _numberOfTreesController.text,
-        'irrigationMethod': selectedOption,
-        'yieldInPreviousYear': _yieldController.text,
+        'cropName': _cropNameController.text,
+        'area': _areaController.text,
+        'plantCount': _plantCountController.text,
+        'irrigationMethod': _selectedIrrigationMethod,
       });
 
+      // Navigate to the next page (OtherPlantsDetailsPage or any other page)
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MangoFarmDetailsPage1(farmId: widget.farmId),
+          builder: (context) => OtherPlantsDetailsPage(farmId: widget.farmId),
         ),
       );
     }
@@ -62,7 +62,6 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
       ),
       body: ListView(
         children:[
-
       Container(
         color: Color(0xffffffff),
         padding: EdgeInsets.all(20.0),
@@ -71,7 +70,7 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
           children: [
             Center(
               child: Text(
-                'Please enter mango farm details here',
+                'Please enter details about other plants here',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -81,15 +80,20 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
               ),
             ),
             SizedBox(height: 20),
-            _buildSubHeading('Mango Varieties'),
+            _buildSubHeading('Crop Name'),
             SizedBox(height: 10),
-            _buildTextField('Number of mango variety', TextInputType.number,
-                _numberOfVarietyController),
+            _buildTextField(
+                'Name of the crop', TextInputType.text, _cropNameController),
             SizedBox(height: 20),
-            _buildSubHeading('Count of Mango Trees'),
+            _buildSubHeading('Area Utilized'),
             SizedBox(height: 10),
-            _buildTextField('Number of mango tree', TextInputType.number,
-                _numberOfTreesController),
+            _buildTextField('Area spent on this crop in acres',
+                TextInputType.number, _areaController),
+            SizedBox(height: 20),
+            _buildSubHeading('Count of Plants'),
+            SizedBox(height: 10),
+            _buildTextField('Number of plants of this crop',
+                TextInputType.number, _plantCountController),
             SizedBox(height: 20),
             _buildSubHeading('Irrigation Method'),
             SizedBox(height: 10),
@@ -98,17 +102,12 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
               ['Drip irrigation', 'Sprinkler irrigation', 'Surface irrigation'],
             ),
             SizedBox(height: 20),
-            _buildSubHeading('Yield in Previous Year'),
-            SizedBox(height: 10),
-            _buildTextField('Yield of mangoes in the previous year',
-                TextInputType.number, _yieldController),
-            SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  _saveMangoFarmDetails(context);
+                  _saveOtherPlantsDetails(context);
                 },
-                child: Text('Continue', style: TextStyle(color: Colors.white)),
+                child: Text('Save', style: TextStyle(color: Colors.white)),
                 style: ElevatedButton.styleFrom(
                   primary: Color(0xFF006227),
                 ),
@@ -155,7 +154,9 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
         child: DropdownButton<String>(
           isExpanded: true,
           hint: Text(placeholder),
-          value: selectedOption.isNotEmpty ? selectedOption : null,
+          value: _selectedIrrigationMethod.isNotEmpty
+              ? _selectedIrrigationMethod
+              : null,
           items: options.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -164,7 +165,7 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
           }).toList(),
           onChanged: (String? value) {
             setState(() {
-              selectedOption = value ?? '';
+              _selectedIrrigationMethod = value ?? '';
             });
           },
         ),

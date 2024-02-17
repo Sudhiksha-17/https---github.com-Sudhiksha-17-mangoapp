@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'images.dart';
 
 void main() {
   runApp(MyApp());
@@ -297,6 +298,20 @@ class _DisplayPageState extends State<DisplayPage> {
             ),
           ),
         ]),
+      ),
+       bottomNavigationBar: BottomAppBar(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ImagesPage()),
+              );
+            },
+            child: Text('Next'),
+          ),
+        ),
       ),
     );
   }

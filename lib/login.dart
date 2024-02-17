@@ -13,6 +13,8 @@ class LoginPage extends StatelessWidget {
 
   Future<void> _signInWithEmailAndPassword(BuildContext context) async {
     try {
+      await FirebaseAuth.instance.setPersistence(
+          Persistence.LOCAL); // Set session persistence to LOCAL
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
@@ -56,59 +58,93 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF0EA73C), Color(0xFF12600B)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF0EA73C), Color(0xFF12600B)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          child: ListView(
-            physics: AlwaysScrollableScrollPhysics(),
-            children:[
+        ),
+        child: ListView(
+          physics: AlwaysScrollableScrollPhysics(),
+          children: [
             Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(height: 50.0),
-                const Icon(Icons.account_circle,
-                    size: 100.0, color: Colors.white),
-                const Padding(
-                  padding: EdgeInsets.only(top: 20.0),
-                  child: Text(
-                    'Log in to your account',
-                    style: TextStyle(
-                      fontSize: 25.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 50.0),
+                  const Icon(Icons.account_circle,
+                      size: 100.0, color: Colors.white),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 20.0),
+                    child: Text(
+                      'Log in to your account',
+                      style: TextStyle(
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20.0),
-                _buildTextFieldWithLabel(
-                  'Enter your Email',
-                  controller: _emailController,
-                ),
-                _buildTextFieldWithLabel(
-                  'Enter your Password',
-                  controller: _passwordController,
-                  isPassword: true,
-                ),
-                
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: InkWell(
+                  const SizedBox(height: 20.0),
+                  _buildTextFieldWithLabel(
+                    'Enter your Email',
+                    controller: _emailController,
+                  ),
+                  _buildTextFieldWithLabel(
+                    'Enter your Password',
+                    controller: _passwordController,
+                    isPassword: true,
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage2()),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_emailController.text.isNotEmpty &&
+                          _passwordController.text.isNotEmpty) {
+                        _signInWithEmailAndPassword(context);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xffffffff),
+                    ),
+                    child: const Text('Continue',
+                        style: TextStyle(color: Color(0xFF006227))),
+                  ),
+                  const SizedBox(height: 10.0),
+                  InkWell(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage2()),
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpPage()),
                       );
                     },
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
+                      padding: const EdgeInsets.only(top: 16.0),
                       child: Text(
-                        'Forgot Password?',
+                        "Don't have an account? Sign up",
                         style: TextStyle(
                           color: Colors.white,
                           decoration: TextDecoration.underline,
@@ -116,46 +152,11 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_emailController.text.isNotEmpty &&
-                        _passwordController.text.isNotEmpty) {
-                      _signInWithEmailAndPassword(context);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xffffffff),
-                  ),
-                  child: const Text('Continue',
-                      style: TextStyle(color: Color(0xFF006227))),
-                ),
-                const SizedBox(height: 10.0),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SignUpPage()),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      "Don't have an account? Sign up",
-                      style: TextStyle(
-                        color: Colors.white,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-            ],
+          ],
         ),
-
       ),
     );
   }

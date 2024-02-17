@@ -60,13 +60,10 @@ class _FarmsPageState extends State<FarmsPage> {
         .doc('farmIds')
         .get();
 
-    print('Snapshot contents: ${snapshot.data()}');
-
     List<String> farmIds = List<String>.from(snapshot.data()?['ids'] ?? []);
 
     int maxFarmCount = 0;
 
-    // Find the greatest number in the farmIds list
     farmIds.forEach((farmId) {
       int currentFarmCount = int.parse(farmId.split('_')[1]);
       if (currentFarmCount > maxFarmCount) {
@@ -74,13 +71,10 @@ class _FarmsPageState extends State<FarmsPage> {
       }
     });
 
-    // Increment the counter by 1
     farmCount = maxFarmCount + 1;
 
     String farmId =
         '${userId.substring(0, 6)}_${farmCount.toString().padLeft(3, '0')}';
-
-    print('Incremented Farm ID: $farmId'); // Print farmId to console
 
     return farmId;
   }
@@ -90,7 +84,7 @@ class _FarmsPageState extends State<FarmsPage> {
       var user = FirebaseAuth.instance.currentUser;
 
       if (user == null) {
-        return; // Handle the case when the user is not authenticated
+        return;
       }
 
       String farmId = await _generateFarmId(user.uid);
@@ -99,10 +93,8 @@ class _FarmsPageState extends State<FarmsPage> {
         farmIds.add(farmId);
       });
 
-      // Save farmIds to Firestore
       _saveFarmIds();
 
-      // Create an empty subfolder with the farmId under the user's document
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -110,7 +102,6 @@ class _FarmsPageState extends State<FarmsPage> {
           .doc(farmId)
           .set({});
 
-      // Navigate to AddFarmsPage with the generated farmId
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -119,12 +110,10 @@ class _FarmsPageState extends State<FarmsPage> {
       );
     } catch (e) {
       print('Error adding farm: $e');
-      // Handle the error, for example, display an error message
     }
   }
 
   void _navigateToFarmPage(String farmId) async {
-    // Load farm details from Firestore
     DocumentSnapshot farmSnapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -133,7 +122,6 @@ class _FarmsPageState extends State<FarmsPage> {
         .get();
 
     if (farmSnapshot.exists) {
-      // Navigate to DisplayPage with the selected farmId and farm details
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -146,17 +134,15 @@ class _FarmsPageState extends State<FarmsPage> {
   }
 
   void _removeFarmBox(String farmId) async {
-    // Remove the specified farmId from the farmIds list
     setState(() {
       farmIds.removeWhere((id) => id == farmId);
     });
 
-    // Delete the entire collection associated with the farmId
     var user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await FirebaseFirestore.instance
           .collectionGroup(
-              farmId) // Use collectionGroup to query by collection name
+              farmId)
           .get()
           .then((querySnapshot) {
         querySnapshot.docs.forEach((document) {
@@ -164,7 +150,6 @@ class _FarmsPageState extends State<FarmsPage> {
         });
       });
 
-      // Save the updated farmIds to Firestore after deletion
       _saveFarmIds();
     }
   }
@@ -248,11 +233,21 @@ class _FarmsPageState extends State<FarmsPage> {
               },
               child: Text('Farm ID: $farmId'),
             ),
-            IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                _showDeleteConfirmationDialog(farmId);
-              },
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    _navigateToEditFarmPage(farmId);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    _showDeleteConfirmationDialog(farmId);
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -270,7 +265,7 @@ class _FarmsPageState extends State<FarmsPage> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: Text(
                 'Cancel',
@@ -279,7 +274,7 @@ class _FarmsPageState extends State<FarmsPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
                 _removeFarmBox(farmId);
               },
               style: ElevatedButton.styleFrom(
@@ -290,6 +285,15 @@ class _FarmsPageState extends State<FarmsPage> {
           ],
         );
       },
+    );
+  }
+
+  void _navigateToEditFarmPage(String farmId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddFarmsPage(farmId: farmId),
+      ),
     );
   }
 }

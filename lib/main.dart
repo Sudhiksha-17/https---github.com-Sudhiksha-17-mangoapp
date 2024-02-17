@@ -47,8 +47,8 @@ class WelcomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 260.0,
-                    height: 90.0,
+                    width: 150.0,
+                    height: 150.0,
                     decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       color: Color(0xFF006e21), // Background color for the logo

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart'; 
 import 'package:mangoapp/add6.dart';
 
 class MangoFarmDetailsPage1 extends StatefulWidget {
@@ -73,7 +72,7 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
       // Save updated mangoVarieties list back to the database
       await farmerDetailsRef.set({'mangoVarieties': mangoVarieties});
 
-      // Display saved details on the console
+      // Display saved details on console
       print('Mango Variety: $varietyToSave');
       print('Area: ${_areaController.text}');
       print('Tree Count: ${_treeCountController.text}');
@@ -151,39 +150,35 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
                 ]),
                 if (selectedOption == "Others") ...[
                   SizedBox(height: 10),
-                  _buildTextFieldWithLabel(
+                  _buildTextField(
                     'Enter the name of the new mango variety',
-                    'Enter variety name',
+                    TextInputType.text,
                     _newVarietyController,
-                    isRequired: true,
                   ),
                 ],
                 SizedBox(height: 20),
-                
-                _buildTextFieldWithLabel(
+                _buildSubHeading('Area of this variety'),
+                SizedBox(height: 10),
+                _buildTextField(
                   'Area spent on this variety in acres',
-                  'Enter area in acres',
+                  TextInputType.number,
                   _areaController,
-                  isNumeric: true,
-                  isRequired: true,
                 ),
                 SizedBox(height: 20),
-                
-                _buildTextFieldWithLabel(
+                _buildSubHeading('Count of trees in this variety'),
+                SizedBox(height: 10),
+                _buildTextField(
                   'Number of trees of this variety',
-                  'Enter number of trees',
+                  TextInputType.number,
                   _treeCountController,
-                  isNumeric: true,
-                  isRequired: true,
                 ),
                 SizedBox(height: 20),
-                
-                _buildTextFieldWithLabel(
+                _buildSubHeading('Age of trees'),
+                SizedBox(height: 10),
+                _buildTextField(
                   'Period since the trees are planted(in yrs/months)',
-                  'Enter period in yrs/months',
+                  TextInputType.text,
                   _ageOfTreesController,
-                  isNumeric: false,
-                  isRequired: true,
                 ),
                 SizedBox(height: 20),
                 GestureDetector(
@@ -193,8 +188,9 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            MangoFarmDetailsPage1(farmId: widget.farmId),
+                        builder: (context) => MangoFarmDetailsPage1(
+                            farmId: widget
+                                .farmId), // Replace YourNewPage with the actual page you want to navigate to
                       ),
                     );
                   },
@@ -218,7 +214,8 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
                         ),
                       );
                     },
-                    child: Text('Continue', style: TextStyle(color: Colors.white)),
+                    child:
+                        Text('Continue', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(
                       primary: Color(0xFF006227),
                     ),
@@ -242,40 +239,15 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
     );
   }
 
-  Widget _buildTextFieldWithLabel(
-      String label, String hintText, TextEditingController controller,
-      {bool isNumeric = false, bool isRequired = true}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Color(0xff218f00),
-          ),
-        ),
-        SizedBox(height: 10),
-        TextField(
-          controller: controller,
-          keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-          inputFormatters: isNumeric
-              ? [FilteringTextInputFormatter.digitsOnly]
-              : null,
-          decoration: InputDecoration(
-            hintText: hintText,
-            border: OutlineInputBorder(),
-            errorText: isRequired && controller.text.isEmpty
-                ? 'Please enter the details'
-                : null,
-          ),
-          onChanged: (value) {
-            if (isRequired) {
-              setState(() {}); // Trigger a rebuild to update the error text dynamically
-            }
-          },
-        ),
-      ],
+  Widget _buildTextField(String placeholder, TextInputType inputType,
+      TextEditingController controller) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: placeholder,
+        border: OutlineInputBorder(),
+      ),
+      keyboardType: inputType,
     );
   }
 

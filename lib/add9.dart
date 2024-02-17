@@ -9,41 +9,40 @@ import 'package:mangoapp/add8.dart';
 import 'package:mangoapp/displayfarms.dart';
 
 class UploadScreen extends StatelessWidget {
-  final String farmId; // Add farmId as a parameter
+  final String farmId;
 
   UploadScreen({required this.farmId, Key? key}) : super(key: key);
 
-  Future<void> _uploadPhotos() async {
+  Future<void> _uploadPhotos(BuildContext context) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       final imageFile = File(pickedFile.path);
-      await _uploadFile(imageFile, 'photos');
+      await _uploadFile(imageFile, 'photos', context);
     } else {
       print('No image selected.');
     }
   }
 
-  Future<void> _uploadVideos() async {
+  Future<void> _uploadVideos(BuildContext context) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       final videoFile = File(pickedFile.path);
-      await _uploadFile(videoFile, 'videos');
+      await _uploadFile(videoFile, 'videos', context);
     } else {
       print('No video selected.');
     }
   }
 
-  Future<void> _uploadFile(File file, String folder) async {
+  Future<void> _uploadFile(File file, String folder, BuildContext context) async {
     await Firebase.initializeApp();
 
     final user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
-      // Create subfolders for photos and videos under the user's collection in storage
       final photoRef = firebase_storage.FirebaseStorage.instance
           .ref()
           .child('users/${user.uid}/$farmId/$folder');
@@ -55,7 +54,6 @@ class UploadScreen extends StatelessWidget {
 
       final downloadURL = await ref.getDownloadURL();
 
-      // Save file details to Firestore under the user's collection
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -67,6 +65,25 @@ class UploadScreen extends StatelessWidget {
       });
 
       print('File uploaded to: $downloadURL');
+
+      // Show confirmation dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Upload Complete"),
+            content: Text("The file has been successfully uploaded."),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -93,7 +110,7 @@ class UploadScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () async {
-                await _uploadPhotos();
+                await _uploadPhotos(context);
               },
               child:
                   Text('Upload Photos', style: TextStyle(color: Colors.white)),
@@ -104,7 +121,7 @@ class UploadScreen extends StatelessWidget {
             SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () async {
-                await _uploadVideos();
+                await _uploadVideos(context);
               },
               child:
                   Text('Upload Videos', style: TextStyle(color: Colors.white)),
@@ -115,7 +132,6 @@ class UploadScreen extends StatelessWidget {
             SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
-                // Implement submit button functionality
                 Navigator.push(
                     context,
                     MaterialPageRoute(
