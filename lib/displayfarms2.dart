@@ -299,14 +299,15 @@ class _DisplayPageState extends State<DisplayPage> {
           ),
         ]),
       ),
-       bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: BottomAppBar(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ImagesPage()),
+                MaterialPageRoute(
+                    builder: (context) => ImagesPage(farmId: widget.farmId)),
               );
             },
             child: Text('Next'),

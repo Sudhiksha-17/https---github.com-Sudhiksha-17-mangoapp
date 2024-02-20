@@ -4,30 +4,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:mangoapp/add2.dart';
-import 'package:mangoapp/displayfarms.dart';
-import 'package:uuid/uuid.dart';
-import 'add2.dart';
 
 class AddFarmsPage extends StatefulWidget {
   final String farmId;
 
-  AddFarmsPage({required this.farmId, Key? key}) : super(key: key);
+  const AddFarmsPage({required this.farmId, Key? key}) : super(key: key);
 
   @override
   _AddFarmsPageState createState() => _AddFarmsPageState();
 }
 
 class _AddFarmsPageState extends State<AddFarmsPage> {
-  late final TextEditingController _farmerNameController =
-      TextEditingController();
-  late final TextEditingController _phoneNumberController =
-      TextEditingController();
-  late final TextEditingController _addressLine1Controller =
-      TextEditingController();
-  late final TextEditingController _addressLine2Controller =
-      TextEditingController();
-  late final TextEditingController _addressLine3Controller =
-      TextEditingController();
+  final TextEditingController _farmerNameController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _addressLine1Controller = TextEditingController();
+  final TextEditingController _addressLine2Controller = TextEditingController();
+  final TextEditingController _addressLine3Controller = TextEditingController();
   List<FilePickerResult?>? _selectedFiles;
 
   Future<void> _saveFarmerDetails(BuildContext context) async {
@@ -39,56 +31,66 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
       DocumentReference<Map<String, dynamic>> documentReference =
           FirebaseFirestore.instance.collection(subfolder).doc('FarmDetails1');
 
-      documentReference.set({
-        'farmerName': _farmerNameController.text,
-        'phoneNumber': _phoneNumberController.text,
-        'addressLine1': _addressLine1Controller.text,
-        'addressLine2': _addressLine2Controller.text,
-        'addressLine3': _addressLine3Controller.text,
-      });
+      try {
+        await documentReference.set({
+          'farmerName': _farmerNameController.text,
+          'phoneNumber': _phoneNumberController.text,
+          'addressLine1': _addressLine1Controller.text,
+          'addressLine2': _addressLine2Controller.text,
+          'addressLine3': _addressLine3Controller.text,
+        });
 
-      if (_selectedFiles != null && _selectedFiles!.isNotEmpty) {
+        // Navigate to the next page after saving details
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddFarmsPage2(farmId: widget.farmId)),
+        );
+      } catch (error) {
+        print("Error saving details: $error");
+        // Handle error (display a message, log it, etc.)
+      }
+    }
+  }
+
+  Future<void> _uploadPDFFiles(BuildContext context) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'jpg', 'png'],
+    );
+
+    if (result != null) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return _buildProgressDialog();
+        },
+        barrierDismissible: false,
+      );
+
+      try {
+        List<String> fileUrls = await _uploadFilesToStorage(
+          [result],
+          FirebaseAuth.instance.currentUser!.uid,
+          widget.farmId,
+          (double progress) {
+            // No need to handle progress here since it's handled inside _uploadFilesToStorage
+          },
+        );
+
+        // Show confirmation dialog
+        Navigator.pop(context); // Close the progress dialog
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return _buildProgressDialog();
+            return _buildConfirmationDialog();
           },
-          barrierDismissible: false,
         );
-
-        try {
-          List<String> fileUrls = await _uploadFilesToStorage(
-            _selectedFiles!,
-            user.uid,
-            widget.farmId,
-            (double progress) {
-              // Update progress bar here if needed
-              print("Upload Progress: ${(progress * 100).toStringAsFixed(2)}%");
-            },
-          );
-
-          Navigator.of(context).pop(); // Close the progress dialog
-          Navigator.of(context).popUntil((route) => route.isFirst);
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return _buildConfirmationDialog();
-            },
-          );
-
-          await documentReference.update({'fileUrls': fileUrls});
-        } catch (error) {
-          print("Error uploading files: $error");
-          // Handle error (display a message, log it, etc.)
-        }
+      } catch (error) {
+        print("Error uploading files: $error");
+        // Handle error (display a message, log it, etc.)
       }
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AddFarmsPage2(farmId: widget.farmId),
-        ),
-      );
     }
   }
 
@@ -99,7 +101,7 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
     Function(double) onProgress,
   ) async {
     List<String> fileUrls = [];
-    String subfolder = 'users/$userId/$farmId/';
+    String subfolder = 'users/$userId/$farmId/Farmer_Id/';
 
     for (var fileResult in selectedFiles) {
       if (fileResult != null && fileResult.files.isNotEmpty) {
@@ -109,11 +111,7 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
         final ref = FirebaseStorage.instance.ref().child(
             '$subfolder${DateTime.now().millisecondsSinceEpoch}_$fileName');
 
-        String farmerIdSubfolder = '$subfolder/Farmer_Id/';
-        final StorageRef = FirebaseStorage.instance.ref().child(
-            '$farmerIdSubfolder${DateTime.now().millisecondsSinceEpoch}_$fileName');
-
-        final uploadTask = StorageRef.putData(file.bytes!);
+        final uploadTask = ref.putData(file.bytes!);
         uploadTask.snapshotEvents.listen(
           (TaskSnapshot snapshot) {
             double progress = snapshot.bytesTransferred / snapshot.totalBytes;
@@ -123,7 +121,7 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
 
         await uploadTask; // Wait for the upload to complete
 
-        final downloadURL = await StorageRef.getDownloadURL();
+        final downloadURL = await ref.getDownloadURL();
         fileUrls.add(downloadURL);
       }
     }
@@ -207,37 +205,8 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
                     SizedBox(width: 8),
                     GestureDetector(
                       onTap: () async {
-                        FilePickerResult? result =
-                            await FilePicker.platform.pickFiles(
-                          allowMultiple: true,
-                          type: FileType.custom,
-                          allowedExtensions: ['pdf', 'jpg', 'png'],
-                        );
-                        if (result != null) {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return _buildProgressDialog();
-                            },
-                            barrierDismissible: false,
-                          );
-
-                          setState(() {
-                            _selectedFiles = [result];
-                          });
-
-                          // Upload the selected files immediately
-                          await _uploadFilesToStorage(
-                            _selectedFiles!,
-                            FirebaseAuth.instance.currentUser!.uid,
-                            widget.farmId,
-                            (double progress) {
-                              // Update progress bar here if needed
-                              print(
-                                  "Upload Progress: ${(progress * 100).toStringAsFixed(2)}%");
-                            },
-                          );
-                        }
+                        // Call method to upload PDF files
+                        await _uploadPDFFiles(context);
                       },
                       child: Text(
                         'Farmer ID Proof',
@@ -253,6 +222,7 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
+                      // Call method to save farmer details
                       _saveFarmerDetails(context);
                     },
                     child:
@@ -321,10 +291,4 @@ class _AddFarmsPageState extends State<AddFarmsPage> {
       ],
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: AddFarmsPage(farmId: "your_farm_id"), // Provide a farmId here
-  ));
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mangoapp/add1.dart';
-import 'package:mangoapp/displayfarms2.dart';
+import 'package:mangoapp/disp3.dart';
 import 'package:mangoapp/login.dart';
 
 class FarmsPage extends StatefulWidget {
@@ -125,7 +125,7 @@ class _FarmsPageState extends State<FarmsPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DisplayPage(farmId: farmId),
+          builder: (context) => Disp3Page(),
         ),
       );
     } else {
@@ -141,8 +141,7 @@ class _FarmsPageState extends State<FarmsPage> {
     var user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await FirebaseFirestore.instance
-          .collectionGroup(
-              farmId)
+          .collectionGroup(farmId)
           .get()
           .then((querySnapshot) {
         querySnapshot.docs.forEach((document) {
@@ -157,12 +156,15 @@ class _FarmsPageState extends State<FarmsPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Farms App',
       theme: ThemeData(primarySwatch: Colors.green),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Farms', style: TextStyle(color: Color(0xff054500))),
-          backgroundColor: Color(0xffffc900),
+          title: Text('Farms',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          backgroundColor: Colors.yellow.withOpacity(0.7),
           actions: [
             GestureDetector(
               onTap: () async {
@@ -188,14 +190,18 @@ class _FarmsPageState extends State<FarmsPage> {
                       );
                     },
                   ),
-                  Text('Sign Out', style: TextStyle(fontSize: 12.0)),
                 ],
               ),
             ),
           ],
         ),
         body: Container(
-          color: Color(0xffffffff),
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage("assets/bg_login.jpg"),
+                fit: BoxFit.cover,
+                opacity: 0.7),
+          ),
           child: Center(
             child: Column(
               children: [
@@ -222,7 +228,7 @@ class _FarmsPageState extends State<FarmsPage> {
   Widget _buildFarmBox(String farmId) {
     return Card(
       margin: EdgeInsets.all(8.0),
-      color: Color(0xff218f00),
+      color: Color.fromARGB(255, 91, 198, 58),
       child: ListTile(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -278,9 +284,13 @@ class _FarmsPageState extends State<FarmsPage> {
                 _removeFarmBox(farmId);
               },
               style: ElevatedButton.styleFrom(
-                primary: const Color.fromARGB(255, 234, 89, 79),
+                backgroundColor: const Color.fromARGB(255, 234, 89, 79),
               ),
-              child: Text('Confirm'),
+              child: Text(
+                'Confirm',
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         );

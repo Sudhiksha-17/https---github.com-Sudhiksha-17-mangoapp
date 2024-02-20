@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mangoapp/add4.dart';
-import 'package:mangoapp/add5.dart';
 
 class MangoFarmDetailsPage extends StatefulWidget {
   final String farmId; // Add farmId as a parameter
@@ -51,72 +50,80 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffffc900),
+        title: Text(
+          'Farm Details',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold), // Text color
+        ),
+        backgroundColor: Color(0xffffc900).withOpacity(0.7),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: Color(0xff054500),
+          color: Colors.black,
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: ListView(
-        children:[
-
-      Container(
-        color: Color(0xffffffff),
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Text(
-                'Please enter mango farm details here',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                  color: Color(0xff218f00),
+        children: [
+          Container(
+            color: Color(0xffffffff),
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    'Please enter mango farm details here',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            SizedBox(height: 20),
-            _buildSubHeading('Mango Varieties'),
-            SizedBox(height: 10),
-            _buildTextField('Number of mango variety', TextInputType.number,
-                _numberOfVarietyController),
-            SizedBox(height: 20),
-            _buildSubHeading('Count of Mango Trees'),
-            SizedBox(height: 10),
-            _buildTextField('Number of mango tree', TextInputType.number,
-                _numberOfTreesController),
-            SizedBox(height: 20),
-            _buildSubHeading('Irrigation Method'),
-            SizedBox(height: 10),
-            _buildDropDown(
-              'Method of irrigation',
-              ['Drip irrigation', 'Sprinkler irrigation', 'Surface irrigation'],
-            ),
-            SizedBox(height: 20),
-            _buildSubHeading('Yield in Previous Year'),
-            SizedBox(height: 10),
-            _buildTextField('Yield of mangoes in the previous year',
-                TextInputType.number, _yieldController),
-            SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  _saveMangoFarmDetails(context);
-                },
-                child: Text('Continue', style: TextStyle(color: Colors.white)),
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xFF006227),
+                SizedBox(height: 20),
+                _buildSubHeading('Mango Varieties'),
+                SizedBox(height: 10),
+                _buildTextField('Number of mango variety', TextInputType.number,
+                    _numberOfVarietyController),
+                SizedBox(height: 20),
+                _buildSubHeading('Count of Mango Trees'),
+                SizedBox(height: 10),
+                _buildTextField('Number of mango tree', TextInputType.number,
+                    _numberOfTreesController),
+                SizedBox(height: 20),
+                _buildSubHeading('Irrigation Method'),
+                SizedBox(height: 10),
+                _buildDropDown(
+                  'Method of irrigation',
+                  [
+                    'Drip irrigation',
+                    'Sprinkler irrigation',
+                    'Surface irrigation'
+                  ],
                 ),
-              ),
+                SizedBox(height: 20),
+                _buildSubHeading('Yield in Previous Year'),
+                SizedBox(height: 10),
+                _buildTextField('Yield of mangoes in the previous year',
+                    TextInputType.number, _yieldController),
+                SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _saveMangoFarmDetails(context);
+                    },
+                    child:
+                        Text('Continue', style: TextStyle(color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF006227),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
         ],
       ),
     );
@@ -127,7 +134,7 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
       text,
       style: TextStyle(
         fontWeight: FontWeight.bold,
-        color: Color(0xff218f00),
+        color: Colors.black,
       ),
     );
   }
@@ -148,7 +155,7 @@ class _MangoFarmDetailsPageState extends State<MangoFarmDetailsPage> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.0),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
+        border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(5.0),
       ),
       child: DropdownButtonHideUnderline(

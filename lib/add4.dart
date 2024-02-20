@@ -84,10 +84,15 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffffc900),
+        title: Text(
+          'Mango Details',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold), // Text color
+        ),
+        backgroundColor: Color(0xffffc900).withOpacity(0.7),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: Color(0xff054500),
+          color: Colors.black,
           onPressed: () {
             Navigator.pop(context);
           },
@@ -107,8 +112,7 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      color: Color(0xff218f00),
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -117,7 +121,7 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
                 SizedBox(height: 10),
                 _buildDropDown('Name of the mango variety', [
                   "ALPHONSO",
-                  "ATHIMATHURAM",
+                  "ATHIMADHURAM",
                   "BANGANAPALLI",
                   "CHERUKURASAM",
                   "CHAUSA",
@@ -217,7 +221,7 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
                     child:
                         Text('Continue', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF006227),
+                      backgroundColor: Color(0xFF006227),
                     ),
                   ),
                 ),
@@ -234,7 +238,7 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
       text,
       style: TextStyle(
         fontWeight: FontWeight.bold,
-        color: Color(0xff218f00),
+        color: Colors.black,
       ),
     );
   }
@@ -255,7 +259,7 @@ class _MangoFarmDetailsPage1State extends State<MangoFarmDetailsPage1> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.0),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
+        border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(5.0),
       ),
       child: DropdownButtonHideUnderline(

@@ -34,7 +34,7 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
       LocationData currentLocation = await location.getLocation();
       setState(() {
         _locationData = currentLocation;
-         _showLocationUpdatedDialog();
+        _showLocationUpdatedDialog();
       });
     } catch (e) {
       print("Error getting location: $e");
@@ -60,8 +60,6 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
       },
     );
   }
-
-
 
   // Convert LocationData to JSON format
   Map<String, dynamic> _locationDataToJson(LocationData locationData) {
@@ -119,47 +117,49 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
         ), // Background color
       ),
       body: ListView(
-        children:[
+        children: [
           Container(
-          color: Color(0xffffffff), // Background color #D3FFA6
-          padding: EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Please enter farm details here',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                  color: Color(0xff218f00),
-                ),
-              ),
-              SizedBox(height: 20.0),
-              _buildHyperlinkedText('Farm location', 'Choose location on maps'),
-              _buildFormField(
-                  'Farm Land', 'Enter area in acres', _farmLandController),
-              _buildFormField('Area (Mangoes)',
-                  'Area spent on mango trees in acres', _mangoAreaController),
-              _buildFormField('Area (Other crops)',
-                  'Area spent on others in acres', _otherCropsAreaController),
-              SizedBox(height: 20.0),
-              SizedBox(height: 20.0),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    _saveFarmDetails(context);
-                  },
-                  child: Text('Continue', style: TextStyle(color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF006227),
+            color: Color(0xffffffff), // Background color #D3FFA6
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Please enter farm details here',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                    color: Color(0xff218f00),
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: 20.0),
+                _buildHyperlinkedText(
+                    'Farm location', 'Choose location on maps'),
+                _buildFormField(
+                    'Farm Land', 'Enter area in acres', _farmLandController),
+                _buildFormField('Area (Mangoes)',
+                    'Area spent on mango trees in acres', _mangoAreaController),
+                _buildFormField('Area (Other crops)',
+                    'Area spent on others in acres', _otherCropsAreaController),
+                SizedBox(height: 20.0),
+                SizedBox(height: 20.0),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _saveFarmDetails(context);
+                    },
+                    child:
+                        Text('Continue', style: TextStyle(color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xFF006227),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
         ],
       ),
     );
