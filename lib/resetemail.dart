@@ -33,16 +33,17 @@ class LoginPage2 extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0EA73C), Color(0xFF12600B)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          image: DecorationImage(
+              image: AssetImage("assets/bg_login.jpg"),
+              fit: BoxFit.cover,
+              opacity: 0.5),
         ),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Icon(Icons.email_rounded, size: 100),
+              const SizedBox(height: 20),
               _buildTextFieldWithLabel(
                 'Enter your registered Email ID',
                 controller: _emailController,
@@ -55,11 +56,12 @@ class LoginPage2 extends StatelessWidget {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xffffffff),
+                  backgroundColor: Color.fromARGB(255, 246, 199, 12),
                 ),
                 child: const Text(
                   'Continue',
-                  style: TextStyle(color: Color(0xFF006227)),
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -79,25 +81,17 @@ class LoginPage2 extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w400,
-              fontSize: 18.0,
-            ),
-          ),
           TextField(
             controller: controller,
             decoration: InputDecoration(
               hintText: label,
-              hintStyle: const TextStyle(color: Colors.white70),
+              hintStyle: const TextStyle(color: Colors.black),
               border: const OutlineInputBorder(),
               focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
+                borderSide: BorderSide(color: Colors.black),
               ),
             ),
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black),
             obscureText: isPassword,
           ),
         ],

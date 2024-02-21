@@ -60,18 +60,16 @@ class ResetPasswordPage extends StatelessWidget {
 }
 */
 
-
 class ResetPasswordPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0EA73C), Color(0xFF12600B)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          image: DecorationImage(
+              image: AssetImage("assets/bg_login.jpg"),
+              fit: BoxFit.cover,
+              opacity: 0.5),
         ),
         child: Center(
           child: Column(
@@ -82,7 +80,7 @@ class ResetPasswordPage extends StatelessWidget {
                 child: Text(
                   'A password reset link has been sent to the Email-id you have provided. Please click on the link to reset your password.',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -93,7 +91,7 @@ class ResetPasswordPage extends StatelessWidget {
               Text(
                 'After resetting, Click here to login with your new password.',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 255, 255, 255),
+                  color: Colors.black,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -108,8 +106,8 @@ class ResetPasswordPage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.white,
-                  onPrimary: Color(0xFF006227),
+                  backgroundColor: Color.fromARGB(255, 246, 199, 12),
+                  foregroundColor: Colors.black,
                 ),
                 child: Text('Login'),
               ),

@@ -90,23 +90,17 @@ class _SignUpPageState extends State<SignUpPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-            ),
-          ),
           TextField(
             controller: controller,
             decoration: InputDecoration(
               hintText: label,
-              hintStyle: const TextStyle(color: Colors.white70),
+              hintStyle: const TextStyle(color: Colors.black),
               border: const OutlineInputBorder(),
               focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
+                borderSide: BorderSide(color: Colors.black),
               ),
             ),
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black),
           ),
         ],
       ),
@@ -134,183 +128,98 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   @override
-  
-    /*
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF0EA73C), Color(0xFF12600B)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("assets/bg_login.jpg"),
+              fit: BoxFit.cover,
+              opacity: 0.5),
+        ),
+        child: ListView(
+          physics: AlwaysScrollableScrollPhysics(),
+          children: [
+            Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      'Sign up',
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.account_circle,
-                        size: 100.0, color: Colors.white),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8.0),
+                  const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      'Create your Account!',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  _buildTextFieldWithLabel('Full Name', fullNameController),
+                  _buildTextFieldWithLabel(
+                      'Phone Number', phoneNumberController),
+                  _buildTextFieldWithLabel('Email', emailController),
+                  _buildTextFieldWithLabel('Password', passwordController),
+                  SizedBox(height: 40),
+                  Container(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await _signUpWithEmailAndPassword(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromARGB(255, 246, 199, 12),
+                        ),
+                        child: const Text('Continue',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      alignment: Alignment.center,
                       child: Text(
-                        'Sign up',
+                        'Already have an account? Log in',
                         style: TextStyle(
-                          fontSize: 18.0,
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
                         ),
                       ),
                     ),
-                    _buildTextFieldWithLabel('Full Name', fullNameController),
-                    _buildTextFieldWithLabel(
-                        'Phone Number', phoneNumberController), // New line
-                    _buildTextFieldWithLabel('Email', emailController),
-                    _buildTextFieldWithLabel(
-                        'Password', passwordController),
-                    ElevatedButton(
-                      onPressed: () async {
-                        await _signUpWithEmailAndPassword(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xffffffff),
-                      ),
-                      child: const Text('Continue',
-                          style: TextStyle(color: Color(0xFF006227))),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        // Navigate to the login page
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginPage(),
-                          ),
-                        );
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.only(top: 16.0),
-                        child: Text(
-                          'Already have an account? Log in',
-                          style: TextStyle(
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 20),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
-    */
-  Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        color: Color.fromARGB(255, 255, 255, 255),
-        onPressed: () {
-          Navigator.pop(context);
-        
-        },
-      ),
-      backgroundColor:Color(0xFF0EA73C),
-      elevation: 0, // Remove the app bar shadow
-    ),
-    body: Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF0EA73C), Color(0xFF12600B)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: ListView(
-        physics: AlwaysScrollableScrollPhysics(),
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.account_circle,
-                    size: 100.0, color: Colors.white),
-                const Padding(
-                  padding: EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    'Sign up',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                _buildTextFieldWithLabel('Full Name', fullNameController),
-                _buildTextFieldWithLabel(
-                    'Phone Number', phoneNumberController),
-                _buildTextFieldWithLabel('Email', emailController),
-                _buildTextFieldWithLabel('Password', passwordController),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    await _signUpWithEmailAndPassword(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xffffffff),
-                  ),
-                  child: const Text('Continue',
-                      style: TextStyle(color: Color(0xFF006227))),
-                ),
-                SizedBox(height: 10),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginPage(),
-                      ),
-                    );
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      'Already have an account? Log in',
-                      style: TextStyle(
-                        color: Colors.white,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
+  }
 }
 
 class MyApp extends StatelessWidget {

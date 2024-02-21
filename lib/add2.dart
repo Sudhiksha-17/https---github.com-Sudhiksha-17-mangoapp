@@ -103,13 +103,14 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add Farms',
-          style: TextStyle(color: Color(0xff054500)), // Text color
+          'Farm Details',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold), // Text color
         ),
-        backgroundColor: Color(0xffffc900),
+        backgroundColor: Color(0xffffc900).withOpacity(0.7),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: Color(0xff054500),
+          color: Colors.black,
           onPressed: () {
             // Navigate back to the display farms page
             Navigator.pop(context);
@@ -130,8 +131,7 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                    color: Color(0xff218f00),
+                    color: Colors.black,
                   ),
                 ),
                 SizedBox(height: 20.0),
@@ -153,7 +153,7 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
                     child:
                         Text('Continue', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF006227),
+                      backgroundColor: Color(0xFF006227),
                     ),
                   ),
                 ),
@@ -174,7 +174,7 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
           heading,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Color(0xff218f00),
+            color: Colors.black,
           ),
         ),
         SizedBox(height: 5.0),
@@ -189,9 +189,9 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
               Text(
                 text,
                 style: TextStyle(
-                  color: Colors.blue,
-                  decoration: TextDecoration.underline,
-                ),
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -210,7 +210,7 @@ class _AddFarmsPage2State extends State<AddFarmsPage2> {
           heading,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Color(0xff218f00),
+            color: Colors.black,
           ),
         ),
         SizedBox(height: 5.0),

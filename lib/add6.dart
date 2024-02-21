@@ -49,10 +49,15 @@ class _OtherPlantsDetailsPageState extends State<OtherPlantsDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          'Others',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold), // Text color
+        ),
         backgroundColor: Color(0xffffc900),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: Color(0xff054500),
+          color: Colors.black,
           onPressed: () {
             Navigator.pop(context);
           },
@@ -72,8 +77,7 @@ class _OtherPlantsDetailsPageState extends State<OtherPlantsDetailsPage> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      color: Color(0xff218f00),
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -138,7 +142,7 @@ class _OtherPlantsDetailsPageState extends State<OtherPlantsDetailsPage> {
                     child:
                         Text('Continue', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF006227),
+                      backgroundColor: Color(0xFF006227),
                     ),
                   ),
                 ),
@@ -155,7 +159,7 @@ class _OtherPlantsDetailsPageState extends State<OtherPlantsDetailsPage> {
       text,
       style: TextStyle(
         fontWeight: FontWeight.bold,
-        color: Color(0xff218f00),
+        color: Colors.black,
       ),
     );
   }
@@ -176,7 +180,7 @@ class _OtherPlantsDetailsPageState extends State<OtherPlantsDetailsPage> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.0),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
+        border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(5.0),
       ),
       child: DropdownButtonHideUnderline(
